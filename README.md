@@ -1,23 +1,45 @@
-# 🌱 Online Plant Store - Full Stack Web Application
+# 🌱 Online Plant Store - Backend
+
+This is the **backend** for the **Online Plant Store** — a full-stack web application where users can browse, purchase, and review plants, while admins can manage inventory, users, and orders.
+
+---
 
 ## 📋 Project Description
-Build a full-stack web application for an online plant store where users can browse, purchase, and review plants, while admins can manage inventory and orders.
+
+This backend provides APIs for managing plants, pots, users, orders, shopping cart, wishlists, reviews, and admin analytics.
 
 ---
 
 ## 🚀 Key Features
-- ✔️ **User Accounts** – Signup, login, and logout (for customers & admins).
-- ✔️ **Home Page** – Displays featured plants, categories, and search functionality.
-- ✔️ **Plant Details** – View plant information, photos, and user reviews; add to cart or favorites.
-- ✔️ **Shopping Cart & Checkout** – Add/remove items, proceed to secure payment.
-- ✔️ **Wishlist** – Save favorite plants for later viewing and purchase.
-- ✔️ **Filters** – Sort plants by price, sunlight needs, and plant type.
-- ✔️ **Admin Dashboard** – Manage plants, orders, users, and view sales analytics.
+
+- **User Authentication**
+  - Sign up, Login, Logout for customers & admins.
+- **Plants Management**
+  - Create, Read, Update, Delete (CRUD) plants.
+- **Pots Management**
+  - Create, Read, Update, Delete (CRUD) pots.
+- **Shopping Cart & Checkout**
+  - Manage cart items and process checkout.
+- **Wishlist**
+  - Add plants to your wishlist for future purchase.
+- **Order Management**
+  - Place and track orders.
+- **Reviews**
+  - Users can leave reviews on plants.
+- **Admin Dashboard**
+  - Admins can manage users, plants, pots, and view sales analytics.
+- **Filtering & Searching**
+  - Sort and filter plants based on price, sunlight needs, and type.
 
 ---
 
 ## 🛠️ Tech Stack
-- **Frontend:** Angular
-- **Backend:** Node.js, Express.js
-- **Database:** MongoDB with Mongoose
-- **Authentication:** JWT (JSON Web Tokens)
+
+- **Backend Framework**: Node.js, Express.js
+- **Database**: MongoDB (with Mongoose ODM)
+- **Authentication**: JSON Web Tokens (JWT)
+- **Environment Variables**: dotenv
+- **Cross-Origin Requests**: CORS
+- **Password Security**: bcryptjs
+
+---

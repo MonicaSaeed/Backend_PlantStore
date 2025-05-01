@@ -1,5 +1,5 @@
 const Plant = require('../Models/Plant');
-const Review = require('../Models/Review'); 
+// const Review = require('../Models/Review'); 
 
 //Get all plants
 exports.getAllPlants = async (req, res) => {
@@ -79,39 +79,39 @@ exports.deletePlant = async (req, res) => {
 };
 
 //Add a review to a plant
-exports.addReviewToPlant = async (req, res) => {
-    try {
-    const { rating, comment, userId } = req.body;
-    const { plantId } = req.params;
+// exports.addReviewToPlant = async (req, res) => {
+//     try {
+//     const { rating, comment, userId } = req.body;
+//     const { plantId } = req.params;
 
-    const review = new Review({
-        userId,
-        rating,
-        comment,
-        item: {
-        id: plantId,
-        type: 'plant'
-        }
-    });
+//     const review = new Review({
+//         userId,
+//         rating,
+//         comment,
+//         item: {
+//         id: plantId,
+//         type: 'plant'
+//         }
+//     });
 
-    await review.save();
+//     await review.save();
 
-    const plant = await Plant.findByIdAndUpdate(
-        plantId,
-        { $push: { reviews: review._id } },
-        { new: true }
-    ).populate('reviews');
+//     const plant = await Plant.findByIdAndUpdate(
+//         plantId,
+//         { $push: { reviews: review._id } },
+//         { new: true }
+//     ).populate('reviews');
 
-    await updatePlantRating(plantId);
+//     await updatePlantRating(plantId);
 
-    res.status(201).json({
-        message: 'Review added successfully',
-        plant
-    });
-    } catch (error) {
-    res.status(500).json({ error: error.message });
-    }
-};
+//     res.status(201).json({
+//         message: 'Review added successfully',
+//         plant
+//     });
+//     } catch (error) {
+//     res.status(500).json({ error: error.message });
+//     }
+// };
 
 
 //Bulk insert plants

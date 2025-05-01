@@ -14,8 +14,8 @@ exports.getAllPlants = async (req, res) => {
 // Get batch of plants 
 exports.getBatch = async (req, res) => {
     try {
-        const size = parseInt(req.body.size) || 10;      
-        const offset = parseInt(req.body.offset) || 0;   
+        const size = parseInt(req.body.size) ||  10;      
+        const offset = parseInt(req.body.offset) ||  0;   
 
         const plants = await Plant.find()
             .skip(offset*size)

@@ -6,6 +6,7 @@ const payRoutes = require('./routes/payRoutes');
 const app = express();
 const plantRoutes = require('./Routes/plantsRoutes');
 const favRoutses = require('./Routes/favRoutes');
+const cart = require('./Models/Cart');
 
 const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());

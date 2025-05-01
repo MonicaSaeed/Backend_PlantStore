@@ -1,0 +1,233 @@
+const Pot = require('../Models/Pot');
+const Review = require('../Models/Review');
+
+
+// addpot
+exports.addPot = async(req,res)=>{
+    try{
+        // const {id}=req.headers;
+        // const user=await User.findById(id);
+        // if(user.role!=='admin')
+        //     return res.status(403).json({message:"You Are not Authorized to add Pot"});
+         const pot = req.body;
+        const newPot = new Pot(pot);
+        await newPot.save();
+        return res.status(201).json({message:"Pot added successfully"})
+    }catch(err)
+    {
+        res.status(500).json({message:`Internal server error + ${err}`});
+    }
+}
+// insert many
+exports.InsertMany = async(req,res)=>{
+   try{
+      // const {id}=req.headers;
+        // const user=await User.findById(id);
+        // if(user.role!=='admin')
+        //     return res.status(403).json({message:"You Are not Authorized to add Pot"});
+        const pots = req.body;
+        await Pot.insertMany(pots);
+        res.status(201).json({ message: 'Pots inserted successfully', count: pots.length });
+    
+   }catch(err)
+   {
+       res.status(500).json({message:`Internal server error + ${err}`});
+   }
+}
+
+// update pot 
+exports.updatePot = async(req,res)=>{
+    try{
+        const {potid}=req.headers;
+       // const {id}=req.headers;
+         // const user = await User.findById(id);
+        // if(user.role!='admin')
+        //    return res.status(403).json({message:"You Are not Authorized to add Pot"});
+        const newPot = req.body;
+        await Pot.findByIdAndUpdate(potid,newPot);
+        return res.status(201).json({message:"Pot updated successfully"});
+
+    }catch(err)
+    {
+        res.status(500).json({message:`Internal server error + ${err}`});
+    }
+}
+
+
+// delete-pot 
+exports.deletePot=async(req,res)=>{
+    try{
+
+        const {potid,id}=req.headers;
+        // const user = await User.findById(id);
+        // if(user.role!='admin')
+        //    return res.status(403).json({message:"You Are not Authorized to add Pot"});
+        await Pot.findByIdAndDelete(potid);
+        return res.status(201).json({message:"Pot deleted Suceddfully"})
+    }catch(err)
+    {
+        res.status(500).json({message:`Internal server error + ${err}`});
+    }
+}
+
+// delete all pots 
+
+exports.deleteAllPots=async (req,res)=>{
+    try{
+        await Pot.deleteMany({});
+        return res.status(200).json({message:"All Pots are Deleted Successfully"})
+    }catch(err)
+    {
+        res.status(500).json({message:`Internal server error + ${err}`});
+    }
+}
+
+// get all 
+exports.getAll = async (req,res)=>{
+    try{
+        const allPots = await Pot.find({}).sort({createdAt:-1});
+        return res.status(200).json({message:"Pots found successfully",allPots});    
+
+    }catch(err)
+    {
+        res.status(500).json({message:`Internal server error + ${err}`});
+    }
+}
+
+// get by id 
+
+exports.getPotById=async (req,res)=>{
+    try{
+        const id = req.params.id;
+        const pot = await Pot.findById(id);
+        return res.status(200).json({message:"Pot Found Successfully",pot})
+    }catch(err)
+    {
+        res.status(500).json({message:`Internal server error + ${err}`});
+    }
+}
+
+// filter 
+
+exports.Filter= async (req, res) => {
+    try {
+      console.log('Searching pots with body filters…' + req.body);
+      const { material, color, size, priceMin, priceMax } = req.body;
+      const filter = {};
+  
+      if (material) filter.material = material;
+      if (color)    filter.color    = color;
+      if (size)     filter.size     = size;
+  
+      if (priceMin != null || priceMax != null) {
+        filter.price = {};
+        if (priceMin != null) filter.price.$gte = Number(priceMin);
+        if (priceMax != null) filter.price.$lte = Number(priceMax);
+      }
+  
+      console.log('Applied filter:', filter);
+      const pots = await Pot.find(filter);
+  
+      if (pots.length === 0) {
+        return res.status(404).json({ message: 'No pots found for the given filters' });
+      }
+      res.json(pots);
+  
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: err.message });
+    }
+  }
+
+  /// getpatch 
+
+exports.getBatch=async(req,res)=>{
+      try {
+          // Destructure from body with defaults
+          const {
+            size   = 10,   
+            offset = 0     
+          } = req.body;
+      
+          // Ensure numeric values
+          const limit  = parseInt(size, 10);
+          const skip   = parseInt(offset, 10) * limit;
+      
+          // Fetch the batch
+          const pots = await Pot.find()
+            .skip(skip)
+            .limit(limit)
+      
+          res.status(200).json({
+            data: pots,
+            page:   offset,
+            count:  pots.length
+          });
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ message: error.message });
+        }
+      } 
+ 
+// add review 
+
+exports.addReview=async (req, res) => {
+    try {
+      const { rating, comment, userId } = req.body;
+      const { potId } = req.params;
+  
+      // 1. Create and save the new review
+      const review = new Review({
+        userId,
+        rating,
+        comment,
+        item: {
+          id:   potId,
+          type: 'pot'
+        }
+      });
+      await review.save();
+  
+      // 2. Push the review _id into the pot's reviews array
+      const pot = await Pot.findByIdAndUpdate(
+        potId,
+        { $push: { reviews: review._id } },
+        { new: true }
+      ).populate('reviews');
+  
+      await updatePotRating(potId);
+  
+      res.status(201).json({
+        message: 'Review added successfully',
+        pot
+      });
+    } catch (error) {
+      console.error('Error adding review to pot:', error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+async function updatePotRating(potId) {
+    try {
+      // Fetch all reviews for this pot
+      const pot = await Pot.findById(potId).populate('reviews');
+      const reviews = pot.reviews || [];
+  
+      // If no reviews, set rating to 0
+      if (reviews.length === 0) {
+        await Pot.findByIdAndUpdate(potId, { rating: 0 });
+        return;
+      }
+  
+      // Sum ratings and compute average
+      const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+      const avgRating   = totalRating / reviews.length;
+  
+      // Save average (one decimal place)
+      await Pot.findByIdAndUpdate(potId, { rating: Number(avgRating.toFixed(1)) });
+    } catch (error) {
+      console.error('Error updating pot rating:', error);
+      }}
+
+
+

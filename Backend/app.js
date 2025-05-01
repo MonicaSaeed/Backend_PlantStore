@@ -5,6 +5,7 @@ const connectDB = require("./Config/dbConnection");
 const payRoutes = require('./routes/payRoutes');
 const app = express();
 const plantRoutes = require('./Routes/plantsRoutes');
+const favRoutses = require('./Routes/favRoutes');
 
 const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
@@ -15,6 +16,7 @@ connectDB();
 
 app.use('/pay', payRoutes);
 app.use('/api/plants', plantRoutes);
+app.use('/api/favorites', favRoutses);
 
 
 app.listen(PORT, () => {

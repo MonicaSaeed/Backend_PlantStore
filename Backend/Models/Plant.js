@@ -19,6 +19,6 @@ const plantSchema = new Schema({
         max: 5, 
         default: 0 
     }
-},{timestamps: true});
+},{timestamps: true},{versionKey: false});
 
 module.exports = mongoose.model('Plant', plantSchema);

@@ -14,8 +14,8 @@ exports.getAllPlants = async (req, res) => {
 // Get batch of plants 
 exports.getBatch = async (req, res) => {
     try {
-        const size = parseInt(req.query.size) || 10;      
-        const offset = parseInt(req.query.offset) || 0;   
+        const size = parseInt(req.body.size) || 10;      
+        const offset = parseInt(req.body.offset) || 0;   
 
         const plants = await Plant.find()
             .skip(offset*size)
@@ -133,12 +133,11 @@ exports.bulkInsertPlants = async (req, res) => {
 //Search plants by filters
 exports.searchPlants = async (req, res) => {
     try {
+        console.log('search');
 
-        console.log('search'); 
-
-        const { category, sunlightNeeds, careLevel, size, priceMin, priceMax } = req.query;
+        const { category, sunlightNeeds, careLevel, size, priceMin, priceMax } = req.body || {};
         const filter = {};
-        
+
         if (category) filter.category = category;
         if (sunlightNeeds) filter.sunlightNeeds = sunlightNeeds;
         if (size) filter.size = size;
@@ -146,9 +145,9 @@ exports.searchPlants = async (req, res) => {
         if (priceMin || priceMax) filter.price = {};
         if (priceMin) filter.price.$gte = priceMin;
         if (priceMax) filter.price.$lte = priceMax;
-        
-        console.log(filter); 
-        const plants = await Plant.find(filter).populate('reviews');
+
+        console.log(filter);
+        const plants = await Plant.find(filter);
 
         if (plants.length === 0) {
             return res.status(404).json({ message: 'No plants found for the given filters' });
@@ -159,6 +158,7 @@ exports.searchPlants = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
 
 //Update plant rating based on reviews
 exports.updatePlantRating = async (plantId) => {

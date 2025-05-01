@@ -10,7 +10,7 @@ const userSchema = new Schema({
         match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address']
     },
     password: { type: String, required: true },
-    role: { type: String, enum: ['customer', 'admin'], default: "user"},
+    role: { type: String, enum: ['customer', 'admin'], default: "customer"},
     addresses: [{ type: String }],
     favorites: { type: Schema.Types.ObjectId, ref: 'Favorites' },
     orders: [{ type: Schema.Types.ObjectId, ref: 'Order' }],

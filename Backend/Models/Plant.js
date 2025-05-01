@@ -9,7 +9,7 @@ const plantSchema = new Schema({
     imageUrls:[{type: String,}],
     category: { type: String, enum: [ "Indoor Plants", "Succulent & Cacti","Hanging Plants"], required: true },
     sunlightNeeds: { type: String, enum: ["Low", "Medium", "Bright"] },
-    careLevel: { type: String, enum: ["Biggner", "intermediate", "Expert"] },
+    careLevel: { type: String, enum: ["Beginner", "intermediate", "Expert"] },
     size: { type: String, enum: ["Small", "Medium", "large"], required: true },
     stock: { type: Number, required: true, min: 0},
     reviews: [{ type: Schema.Types.ObjectId, ref: 'Review'}],

@@ -13,7 +13,7 @@ user.email = user.email.toLowerCase();
  let IsCorrectPassword =  await bcrypt.compare(user.password,founduser.password);
  if(!IsCorrectPassword) return res.status(400).json({message:"InValid Email/Password"})
 
- let data = await jwt.sign({email:founduser.email,username:founduser.username},"PrivateKey12345");
+ let data = await jwt.sign({email:founduser.email,username:founduser.username,Role:founduser.role},"PrivateKey12345");
  res.header("front-auth-token",data);
  
  return res.status(200).json({message:"LogIN Successfuly",userData:user});

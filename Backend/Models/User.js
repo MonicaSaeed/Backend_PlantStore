@@ -15,6 +15,6 @@ const userSchema = new Schema({
     favorites: { type: Schema.Types.ObjectId, ref: 'Favorites' },
     orders: [{ type: Schema.Types.ObjectId, ref: 'Order' }],
     cart: { type: Schema.Types.ObjectId, ref: 'Cart' }
-},{timestamps: true});
+},{timestamps: true , versionKey:false});
 
 module.exports = mongoose.model('User', userSchema);

@@ -1,33 +1,29 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 require('dotenv').config();
-const connectDB = require("./Config/dbConnection");
 
 const payRoutes = require('./routes/payRoutes');
 
 const app = express();
-app.use(bodyParser.json());
+const DBListener = require('./Config/dbConnection'); 
 
-app.use('/pay', payRoutes);
+
+const PORT = process.env.PORT || 3000;
+app.use(bodyParser.json());
+app.use(express.json());
 
 // Connect to MongoDB
-(async () => {
-    try {
-        const listenerDB = await connectDB();
+DBListener.on('error',(err)=>{console.log(err)});
 
-        listenerDB.once('open', () => {
-            app.get(['/', '/main'], (req, res) => {
-                res.send("Welcome to the home page"); // Placeholder
-            });
-            // const userRoute = require("../Backend/Routes/UserRoutes");
-            // app.use("/api/users",userRoute);
-        });
+DBListener.once('open',()=>{
 
-        const PORT = process.env.PORT || 3000;
-        app.listen(PORT, () => {
-            console.log(`Server running on http://localhost:${PORT}`);
-        });
-    } catch (error) {
-        console.error("App initialization failed:", error.message);
-    }
-})();
+    console.log("✅ Connected to MongoDB"); 
+    //All the routes will be here
+    app.use('/pay', payRoutes);
+
+}); 
+
+
+app.listen(PORT, () => { 
+    console.log(`http://localhost:${PORT}`); 
+}); 

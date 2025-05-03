@@ -11,7 +11,7 @@ const DBListener = require('./Config/dbConnection');
 const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(express.json());
-
+const reviewRoute = require('./Routes/reviewRoutes')
 // Connect to MongoDB
 DBListener.on('error',(err)=>{console.log(err)});
 
@@ -20,6 +20,8 @@ DBListener.once('open',()=>{
     console.log("✅ Connected to MongoDB"); 
     //All the routes will be here
     app.use('/pay', payRoutes);
+    app.use('/review', reviewRoute);
+
 
 }); 
 

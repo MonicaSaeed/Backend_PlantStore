@@ -73,23 +73,48 @@ const addToCart = async (req, res) => {
         return res.status(500).json({ success: false, message: `Server error: ${error.message}` });
     }
 };
-
 const updateCartItem = async (req, res) => {
     try {
         // it's in cart put just need to update quantity by 1
-        const {userId} = req.body;
+        const {userId, operation} = req.body;
         const {plantId} = req.params;
+
         if (!userId || !plantId) {
             return res.status(400).json({ success: false, message: "User ID and Plant ID are required" });
         }
         const itemPlant = await plantModel.findById(plantId);
+        const itemPot = await potModel.findById(plantId);
         if(itemPlant){
             const findIndex = cartItems.itemsPlant.findIndex(item => item.plantId.toString() === plantId);
-            cartItems.itemsPlant[findIndex].quantity += 1;
+            if (operation === "add") {
+                if(itemPlant.stock > cartItems.itemsPlant[findIndex].quantity){
+                    cartItems.itemsPlant[findIndex].quantity += 1;
+                }
+                else{
+                    return res.status(400).json({ success: false, message: "No more stock available" });
+                }
+            } else if (operation === "remove") {
+                cartItems.itemsPlant[findIndex].quantity -= 1;
+                if (cartItems.itemsPlant[findIndex].quantity <= 0) {
+                    cartItems.itemsPlant.splice(findIndex, 1);
+                }
+            }
             await cartItems.save();
         }else{
             const findIndex = cartItems.itemsPot.findIndex(item => item.plantId.toString() === plantId);
-            cartItems.itemsPot[findIndex].quantity += 1;
+            if (operation === "add") {
+                if(itemPot.stock > cartItems.itemsPot[findIndex].quantity){
+                    cartItems.itemsPot[findIndex].quantity += 1;
+                }
+                else{
+                    return res.status(400).json({ success: false, message: "No more stock available" });
+                }
+            } else if (operation === "remove") {
+                cartItems.itemsPot[findIndex].quantity -= 1;
+                if (cartItems.itemsPot[findIndex].quantity <= 0) {
+                    cartItems.itemsPot.splice(findIndex, 1);
+                }
+            }
             await cartItems.save();
         }
         return res.status(200).json({ success: true, message: "Item updated in cart", cartItems });
@@ -99,7 +124,6 @@ const updateCartItem = async (req, res) => {
         return res.status(500).json({ success: false, message: `Server error: ${error.message}` });
     }
 }
-
 const removeFromCart = async (req, res) => {
     try{
         const {userId} = req.body;
@@ -144,5 +168,5 @@ module.exports = {
     addToCart,
     removeFromCart,
     clearCart,
-
+    updateCartItem
 }

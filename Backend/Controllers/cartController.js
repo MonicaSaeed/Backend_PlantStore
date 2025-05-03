@@ -78,14 +78,16 @@ const updateCartItem = async (req, res) => {
         // it's in cart put just need to update quantity by 1
         const {userId, operation} = req.body;
         const {plantId} = req.params;
-
+        console.log(userId + "    " + operation + "     " + plantId)
         if (!userId || !plantId) {
             return res.status(400).json({ success: false, message: "User ID and Plant ID are required" });
         }
         const itemPlant = await plantModel.findById(plantId);
         const itemPot = await potModel.findById(plantId);
+        const cartItems = await cartModel.findOne({ userId });
         if(itemPlant){
-            const findIndex = cartItems.itemsPlant.findIndex(item => item.plantId.toString() === plantId);
+            const findIndex = await cartItems.itemsPlant.findIndex(item => item.plantId.toString() === plantId);
+            console.log(findIndex)
             if (operation === "add") {
                 if(itemPlant.stock > cartItems.itemsPlant[findIndex].quantity){
                     cartItems.itemsPlant[findIndex].quantity += 1;
@@ -94,10 +96,9 @@ const updateCartItem = async (req, res) => {
                     return res.status(400).json({ success: false, message: "No more stock available" });
                 }
             } else if (operation === "remove") {
+                if(cartItems.itemsPlant[findIndex].quantity>1)
                 cartItems.itemsPlant[findIndex].quantity -= 1;
-                if (cartItems.itemsPlant[findIndex].quantity <= 0) {
-                    cartItems.itemsPlant.splice(findIndex, 1);
-                }
+               
             }
             await cartItems.save();
         }else{
@@ -135,14 +136,27 @@ const removeFromCart = async (req, res) => {
         if (!cartItems) {
             return res.status(404).json({ success: false, message: "No items found in the cart" });
         }
+        const itemPlant = await plantModel.findById(plantId);
+        const itemPot = await potModel.findById(plantId);
+        if(itemPlant){
         const index = cartItems.itemsPlant.findIndex(item => item.plantId.toString() === plantId);
         if (index > -1) {
             cartItems.itemsPlant.splice(index, 1);
             await cartItems.save();
-            return res.status(200).json({ success: true, message: "Item removed from cart", cartItems });
+            return res.status(200).json({ success: true, message: "Plant removed from cart", cartItems });
         } else {
-            return res.status(404).json({ success: false, message: "Item not found in the cart" });
+            return res.status(404).json({ success: false, message: "PlantItem not found in the cart" });
         }
+    }else if(itemPot) {
+        const index = cartItems.itemsPot.findIndex(item => item.plantId.toString() === plantId);
+        if (index > -1) {
+            cartItems.itemsPot.splice(index, 1);
+            await cartItems.save();
+            return res.status(200).json({ success: true, message: "Pot removed from cart", cartItems });
+        } else {
+            return res.status(404).json({ success: false, message: "PotItem not found in the cart" });
+        }
+    }
     }
     catch (error) {
         console.error("Error removing from cart:", error.message);

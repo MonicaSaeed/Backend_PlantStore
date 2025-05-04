@@ -171,63 +171,7 @@ exports.getBatch=async(req,res)=>{
  
 // add review 
 
-exports.addReview=async (req, res) => {
-    try {
-      const { rating, comment, userId } = req.body;
-      const { potId } = req.params;
-  
-      // 1. Create and save the new review
-      const review = new Review({
-        userId,
-        rating,
-        comment,
-        item: {
-          id:   potId,
-          type: 'pot'
-        }
-      });
-      await review.save();
-  
-      // 2. Push the review _id into the pot's reviews array
-      const pot = await Pot.findByIdAndUpdate(
-        potId,
-        { $push: { reviews: review._id } },
-        { new: true }
-      ).populate('reviews');
-  
-      await updatePotRating(potId);
-  
-      res.status(201).json({
-        message: 'Review added successfully',
-        pot
-      });
-    } catch (error) {
-      console.error('Error adding review to pot:', error);
-      res.status(500).json({ error: error.message });
-    }
-  }
 
-async function updatePotRating(potId) {
-    try {
-      // Fetch all reviews for this pot
-      const pot = await Pot.findById(potId).populate('reviews');
-      const reviews = pot.reviews || [];
-  
-      // If no reviews, set rating to 0
-      if (reviews.length === 0) {
-        await Pot.findByIdAndUpdate(potId, { rating: 0 });
-        return;
-      }
-  
-      // Sum ratings and compute average
-      const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
-      const avgRating   = totalRating / reviews.length;
-  
-      // Save average (one decimal place)
-      await Pot.findByIdAndUpdate(potId, { rating: Number(avgRating.toFixed(1)) });
-    } catch (error) {
-      console.error('Error updating pot rating:', error);
-      }}
 
 
 

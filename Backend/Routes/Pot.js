@@ -25,8 +25,6 @@ router.get('/getPot-byId/:id',potController.getPotById)
 router.get('/filter', potController.Filter)
 /// get batch of pots (10 for ex)
 router.get('/getBatch',potController.getBatch);
-/// add review 
-router.post('/addReview-toPot/:potId',potController.addReview)
 
 
 

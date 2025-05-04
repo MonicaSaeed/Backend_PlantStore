@@ -39,12 +39,12 @@ register = async(req,res)=>{
     
     user.email = user.email.toLowerCase();
  
-    const existUsername = await usermodel.findOne({username:username});
+    const existUsername = await usermodel.findOne({username:user.username});
 
     if(existUsername)
         res.status(400).json({message:"Username already exist"});
 
-    const existEmail = await usermodel.findOne({email:email});
+    const existEmail = await usermodel.findOne({email:user.email});
     if(existEmail)
         res.status(400).json({message:"Email already exist"});
 

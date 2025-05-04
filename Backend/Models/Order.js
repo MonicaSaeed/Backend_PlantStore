@@ -18,7 +18,7 @@ const orderSchema = new Schema({
     totalAmount: { type: Number, required: true, min: 0 },
     orderStatus: { type: String, enum: ['pending', 'shipped', 'delivered'] },
     shippingAddress: String,
-    paymentStatus: { type: String, enum: ['onDelivere', 'paid'] },
+    paymentStatus: { type: String, enum: ['waiting','onDelivere', 'paid'] },
     TraxId: { type: String }
     
 },{timestamps: true});

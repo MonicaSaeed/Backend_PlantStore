@@ -14,6 +14,7 @@ exports.pay = async (req, res) => {
 
         res.json({ iframe_url: iframeURL });
     } catch (error) {
+        console.log(error);
         console.error(error.response ? error.response.data : error.message);
         res.status(500).send('Payment Error');
     }
@@ -21,7 +22,7 @@ exports.pay = async (req, res) => {
 
 exports.paymentCallback = (req, res) => {
     const query = req.query;
-
+    console.log(query);
     if (query.success === 'true' && query.txn_response_code === 'APPROVED') {
         console.log("✅ Payment successful for order:", query.order);
         res.send('Payment Success!');

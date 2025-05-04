@@ -13,11 +13,26 @@ user.email = user.email.toLowerCase();
  let IsCorrectPassword =  await bcrypt.compare(user.password,founduser.password);
  if(!IsCorrectPassword) return res.status(400).json({message:"InValid Email/Password"})
 
- let data = await jwt.sign({email:founduser.email,username:founduser.username,Role:founduser.role},"PrivateKey12345");
- res.header("front-auth-token",data);
+    let token = jwt.sign(
+        {
+            id: founduser._id,
+            role: founduser.role
+        },
+        "PrivateKey12345" // Use process.env.JWT_SECRET in real apps
+    );
  
- return res.status(200).json({message:"LogIN Successfuly",userData:user});
+    res.header("front-auth-token", token);
 
+    // Return token in response body too
+    return res.status(200).json({
+        message: "Login Successfully",
+        token: token,
+        userData: {
+            email: founduser.email,
+            username: founduser.username,
+            role: founduser.role
+        }
+    });
 }
 
 register = async(req,res)=>{
@@ -59,7 +74,7 @@ getAllUsers = async(req,res)=>{
 }
 
 getUserById = async(req,res) =>{
-    const id = req.params;
+    const {id} = req.params;
 
     try
     {
@@ -74,12 +89,14 @@ getUserById = async(req,res) =>{
 
 updateUser = async(req,res)=>{
 
-    const id  = req.params;
+    const {id}  = req.params;
     const UpdatedUser = req.body;      
-    UpdatedUser.email = email.toLowerCase();
-
     try {
 
+        if(UpdatedUser.email)
+        {
+            UpdatedUser.email = UpdatedUser.email.toLowerCase();
+        }
         if (UpdatedUser.password) 
         {
             const salt = await bcrypt.genSalt(15);
@@ -88,13 +105,13 @@ updateUser = async(req,res)=>{
 
         }
 
-        const User = await User.findByIdAndUpdate(id,UpdatedUser);
-        if (!User)
+        const updated = await usermodel.findByIdAndUpdate(id, UpdatedUser, { new: true });
+        if (!updated)
          {
             return res.status(404).json({ message: 'User not found' });
          }
 
-        res.status(200).json(User);
+        res.status(200).json(updated);
     } 
     catch (error)
      {
@@ -106,18 +123,18 @@ updateUser = async(req,res)=>{
 
 deleteUser = async(req,res) => {
     
-    const id  = req.params;
+    const {id}  = req.params;
 
     try {
 
-        const User = await User.findByIdAndDelete(id);
+        const deleted = await usermodel.findByIdAndDelete(id);
 
-        if (!User)
+        if (!deleted)
          {
             return res.status(404).json({ message: 'User Not Found'});
          }
 
-        res.status(200).json({message:"User Deleted",user:User});
+        res.status(200).json({message:"User Deleted",user:deleted});
     } 
     catch (error)
      {

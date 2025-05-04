@@ -16,18 +16,16 @@ user.email = user.email.toLowerCase();
     let token = jwt.sign(
         {
             id: founduser._id,
+            username: founduser.username,
             role: founduser.role
         },
-        "PrivateKey12345" // Use process.env.JWT_SECRET in real apps
+        "PrivateKey12345" 
     );
- 
-    res.header("front-auth-token", token);
-
-    // Return token in response body too
     return res.status(200).json({
         message: "Login Successfully",
         token: token,
         userData: {
+            id: founduser._id,
             email: founduser.email,
             username: founduser.username,
             role: founduser.role
@@ -41,12 +39,15 @@ register = async(req,res)=>{
     
     user.email = user.email.toLowerCase();
  
-    let founduser = await usermodel.findOne({email:user.email});
- 
-    if(founduser) 
-    {
-       return res.status(201).json({message:"Aready Exist,Please LogIn"});
-    }
+    const existUsername = await usermodel.findOne({username:username});
+
+    if(existUsername)
+        res.status(400).json({message:"Username already exist"});
+
+    const existEmail = await usermodel.findOne({email:email});
+    if(existEmail)
+        res.status(400).json({message:"Email already exist"});
+
  
     let salt = await bcrypt.genSalt(15);
     let PasswordHashe = await bcrypt.hash(user.password,salt);
@@ -74,10 +75,9 @@ getAllUsers = async(req,res)=>{
 }
 
 getUserById = async(req,res) =>{
-    const {id} = req.params;
-
     try
     {
+        const {id} = req.params;
         let user = await usermodel.findById(id);
         res.status(200).json({message:"Found Users",Users:user});
     } 
@@ -87,11 +87,11 @@ getUserById = async(req,res) =>{
 
 }
 
-updateUser = async(req,res)=>{
-
-    const {id}  = req.params;
-    const UpdatedUser = req.body;      
+updateUser = async(req,res)=>{   
     try {
+
+        const {id}  = req.params;
+        const UpdatedUser = req.body;   
 
         if(UpdatedUser.email)
         {
@@ -122,11 +122,11 @@ updateUser = async(req,res)=>{
 }
 
 deleteUser = async(req,res) => {
-    
-    const {id}  = req.params;
+
 
     try {
 
+        const {id}  = req.params;
         const deleted = await usermodel.findByIdAndDelete(id);
 
         if (!deleted)

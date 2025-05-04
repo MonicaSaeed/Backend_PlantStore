@@ -1,14 +1,25 @@
 const jwt = require("jsonwebtoken");
 
-permission = (req,res,next)=>{
+const permission = (req, res, next) => {
 
-const datauser_jwt = req.header("front-auth-token");
+      const authHeader = req.headers['authorization'];
+      const token = authHeader && authHeader.split(' ')[1];
+      
+      if (!token) {
+         return res.status(401).json({ message: "Authentication token required" });
+      }
+      
+      try {
+         const decoded = jwt.verify(token, "PrivateKey12345");
 
-const decode_jwt  = jwt.decode(datauser_jwt,"PrivateKey12345");
+         if (decoded.role !== "admin") {
+               return res.status(403).json({ message: "Access Denied. Admins only." });
+         }
 
-if(decode_jwt.role !== "admin")
-{
-   res.status().json({message:"Not Allowed"});
-}
-next();
-}
+         req.user = decoded; //pass user data to next middleware
+         next();
+
+      } catch (err) {
+         return res.status(400).json({ message: "Invalid token." });
+      }
+};

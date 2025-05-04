@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const UserController = require("../Controllers/UserController");
-
+const permission = require("../Middleware/PermissionMiddleware");
 
 router.post("/login",UserController.Login);
 

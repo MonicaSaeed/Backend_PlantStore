@@ -29,7 +29,7 @@ const orderSchema = new Schema({
 
     paymentStatus: { type: String, enum: ['waiting', 'onDelivery', 'paid'], default: 'waiting' },
 
-    trackingId: { type: String }
+    PaymentTrackId: { type: String }
     
 }, { timestamps: true });
 

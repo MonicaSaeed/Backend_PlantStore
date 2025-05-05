@@ -11,6 +11,9 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(express.json());
 const reviewRoute = require('./Routes/reviewRoutes')
+const favRoute = require('./Routes/favRoutes')
+const cartRoute = require('./Routes/cartRoutes')
+const plantRoute = require('./Routes/plantsRoutes')
 
 // Allow requests from Angular frontend
 const cors = require('cors');
@@ -29,6 +32,11 @@ DBListener.once('open',()=>{
     //All the routes will be here
     app.use('/pay', payRoutes);
     app.use('/review', reviewRoute);
+    app.use('/pot', potRoute);
+    app.use('/plant', plantRoute);
+    app.use('/cart', cartRoute);
+    app.use('/fav', favRoute);
+
 
 
 }); 

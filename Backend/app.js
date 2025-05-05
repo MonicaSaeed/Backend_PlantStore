@@ -2,8 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 require('dotenv').config();
 
-const payRoutes = require('./routes/payRoutes');
-const potRoute=require('./Routes/Pot')
+const payRoutes = require('./Routes/pay.Routes');
+const orderRoutes = require('./Routes/order.Routes')
+
+
 const app = express();
 const DBListener = require('./Config/dbConnection'); 
 
@@ -31,13 +33,12 @@ DBListener.once('open',()=>{
     console.log("✅ Connected to MongoDB"); 
     //All the routes will be here
     app.use('/pay', payRoutes);
+    app.use('/api/orders', orderRoutes);
     app.use('/review', reviewRoute);
     app.use('/pot', potRoute);
     app.use('/plant', plantRoute);
     app.use('/cart', cartRoute);
     app.use('/fav', favRoute);
-
-
 
 }); 
 

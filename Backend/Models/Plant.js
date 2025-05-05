@@ -9,8 +9,8 @@ const plantSchema = new Schema({
     imageUrls:[{type: String,}],
     category: { type: String, enum: [ "Indoor Plants", "Succulent & Cacti","Hanging Plants"], required: true },
     sunlightNeeds: { type: String, enum: ["Low", "Medium", "Bright"] },
-    careLevel: { type: String, enum: ["Biggner", "intermediate", "Expert"] },
-    size: { type: String, enum: ["Small", "Medium", "large"], required: true },
+    careLevel: { type: String, enum: ["Beginner", "Intermediate", "Expert"] },
+    size: { type: String, enum: ["Small", "Medium", "Large"], required: true },
     stock: { type: Number, required: true, min: 0},
     reviews: [{ type: Schema.Types.ObjectId, ref: 'Review'}],
     rating: { 
@@ -19,6 +19,6 @@ const plantSchema = new Schema({
         max: 5, 
         default: 0 
     }
-},{timestamps: true});
+},{timestamps: true},{versionKey: false});
 
 module.exports = mongoose.model('Plant', plantSchema);

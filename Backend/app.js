@@ -2,8 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 require('dotenv').config();
 
-const payRoutes = require('./routes/payRoutes');
-const orderRoutes = require('./Routes/orderRoutes')
+const payRoutes = require('./Routes/pay.Routes');
+const orderRoutes = require('./Routes/order.Routes')
 
 const app = express();
 const DBListener = require('./Config/dbConnection'); 

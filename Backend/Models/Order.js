@@ -1,26 +1,36 @@
+const User = require('../Models/User');
+const Plant = require('../Models/Plant');
+const Pot = require('../Models/Pot');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const orderSchema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+
     itemsPlant: [
         {
-        plantId: { type: Schema.Types.ObjectId, ref: 'Plant' },
-        quantity: { type:Number, min:1, default:1 }
+            plantId: { type: Schema.Types.ObjectId, ref: 'Plant', required: true },
+            quantity: { type: Number, min: 1, default: 1 }
         }
     ],
+
     itemsPot: [
         {
-            pottId: { type: Schema.Types.ObjectId, ref: 'Pot' },
-            quantity: { type:Number, min:1, default:1 }
+            potId: { type: Schema.Types.ObjectId, ref: 'Pot', required: true },
+            quantity: { type: Number, min: 1, default: 1 }
         }
     ],
+
     totalAmount: { type: Number, required: true, min: 0 },
-    orderStatus: { type: String, enum: ['pending', 'shipped', 'delivered'] },
-    shippingAddress: String,
-    paymentStatus: { type: String, enum: ['waiting','onDelivere', 'paid'] },
-    TraxId: { type: String }
+
+    orderStatus: { type: String, enum: ['pending', 'shipped', 'delivered'], default: 'pending' },
+
+    shippingAddress: { type: String, required: true },
+
+    paymentStatus: { type: String, enum: ['waiting', 'onDelivery', 'paid'], default: 'waiting' },
+
+    trackingId: { type: String }
     
-},{timestamps: true});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Order', orderSchema);

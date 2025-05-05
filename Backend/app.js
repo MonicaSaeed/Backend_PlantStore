@@ -1,17 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 require('dotenv').config();
-
-const payRoutes = require('./Routes/pay.Routes');
-const orderRoutes = require('./Routes/order.Routes')
-
-
 const app = express();
 const DBListener = require('./Config/dbConnection'); 
 
 const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(express.json());
+const payRoutes = require('./Routes/pay.Routes');
+const orderRoutes = require('./Routes/order.Routes')
+const potRoute = require('./Routes/Pot')
 const reviewRoute = require('./Routes/reviewRoutes')
 const favRoute = require('./Routes/favRoutes')
 const cartRoute = require('./Routes/cartRoutes')

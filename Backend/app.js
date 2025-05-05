@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 require('dotenv').config();
 
 const payRoutes = require('./routes/payRoutes');
-
+const potRoute=require('./Routes/Pot')
 const app = express();
 const DBListener = require('./Config/dbConnection'); 
 

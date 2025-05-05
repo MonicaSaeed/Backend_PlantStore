@@ -76,3 +76,50 @@ exports.getOrdersByUserId = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
+// PATCH - orderStatus by User ID
+exports.updateOrderStatus = async (req, res) => {
+  try {
+    const { orderStatus } = req.body;
+
+    if (!['pending', 'shipped', 'delivered'].includes(orderStatus)) {
+      return res.status(400).json({ message: 'Invalid order status value.' });
+    }
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      req.params.id,
+      { orderStatus },
+      { new: true }
+    );
+
+    if (!updatedOrder) return res.status(404).json({ message: 'Order not found.' });
+
+    res.json(updatedOrder);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+// PATCH - paymentStatus by User ID
+exports.updatePaymentStatus = async (req, res) => {
+  try {
+    const { paymentStatus } = req.body;
+
+    if (!['waiting', 'onDelivere', 'paid'].includes(paymentStatus)) {
+      return res.status(400).json({ message: 'Invalid payment status value.' });
+    }
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      req.params.id,
+      { paymentStatus },
+      { new: true }
+    );
+
+    if (!updatedOrder) return res.status(404).json({ message: 'Order not found.' });
+
+    res.json(updatedOrder);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

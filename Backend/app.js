@@ -12,6 +12,15 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(express.json());
 const reviewRoute = require('./Routes/reviewRoutes')
+
+// Allow requests from Angular frontend
+const cors = require('cors');
+app.use(cors({
+    origin: 'http://localhost:4200',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'productId']
+}));
+
 // Connect to MongoDB
 DBListener.on('error',(err)=>{console.log(err)});
 

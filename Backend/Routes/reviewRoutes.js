@@ -4,6 +4,6 @@ let router = express.Router();
 const cartController = require('../Controllers/reviewControlles');
 
 router.post('/addReview', cartController.addReview);
-router.get('/getReviews', cartController.getReviews);
+router.post('/getReviews', cartController.getReviews);
 
 module.exports = router;

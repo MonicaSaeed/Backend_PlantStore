@@ -7,7 +7,6 @@ const potRoute=require('./Routes/Pot')
 const app = express();
 const DBListener = require('./Config/dbConnection'); 
 
-
 const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(express.json());

@@ -4,12 +4,11 @@ require('dotenv').config();
 const app = express();
 const DBListener = require('./Config/dbConnection'); 
 
-const userRoute = require("../Backend/Routes/UserRoutes");
-app.use("/api/users",userRoute);
 
 const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(express.json());
+const userRoute = require("../Backend/Routes/UserRoutes");
 const payRoutes = require('./Routes/pay.Routes');
 const orderRoutes = require('./Routes/order.Routes')
 const potRoute = require('./Routes/Pot')
@@ -33,8 +32,9 @@ DBListener.once('open',()=>{
 
     console.log("✅ Connected to MongoDB"); 
     //All the routes will be here
+    app.use("/users",userRoute);
     app.use('/pay', payRoutes);
-    app.use('/api/orders', orderRoutes);
+    app.use('/orders', orderRoutes);
     app.use('/review', reviewRoute);
     app.use('/pot', potRoute);
     app.use('/plant', plantRoute);

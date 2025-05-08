@@ -1,9 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { pay, paymentCallback } = require('../Controllers/payController');
+const paymentController = require('../Controllers/payController');
 
-router.post('/', pay);
+router.post('/', paymentController.pay);
 
-router.get('/payment-callback', paymentCallback);
+router.get('/payments', paymentController.getAllPayments);
+
+router.get('/payments/:OrderId', paymentController.getPaymentByOrderId);
+
+router.get('/payment-callback', paymentController.paymentCallback);
 
 module.exports = router;
+

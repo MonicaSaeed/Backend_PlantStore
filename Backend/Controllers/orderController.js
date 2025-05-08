@@ -3,7 +3,7 @@ const Order = require('../Models/Order');
 // POST - Create new order
 exports.postOrderInfo = async (req, res) => {
     try {
-        const { userId, itemsPlant, itemsPot, totalAmount, orderStatus, shippingAddress, paymentStatus, TraxId } = req.body;
+        const { userId, itemsPlant, itemsPot, totalAmount, orderStatus, shippingAddress, paymentStatus } = req.body;
 
         const newOrder = new Order({
             userId,
@@ -13,7 +13,6 @@ exports.postOrderInfo = async (req, res) => {
             orderStatus,
             shippingAddress,
             paymentStatus,
-            TraxId
         });
 
         const savedOrder = await newOrder.save();
@@ -106,7 +105,7 @@ exports.updatePaymentStatus = async (req, res) => {
   try {
     const { paymentStatus } = req.body;
 
-    if (!['waiting', 'onDelivere', 'paid'].includes(paymentStatus)) {
+    if (!['pending', 'onDelivere', 'paid'].includes(paymentStatus)) {
       return res.status(400).json({ message: 'Invalid payment status value.' });
     }
 

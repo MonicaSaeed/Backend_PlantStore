@@ -28,6 +28,7 @@ exports.pay = async (req, res) => {
   }
 };
 
+
 exports.paymentCallback = async (req, res) => {
   const query = req.query;
   console.log(query);
@@ -79,3 +80,37 @@ exports.paymentCallback = async (req, res) => {
     res.send('Payment Failed.');
   }
 };
+
+
+// GET /payments - Get all payment processes
+exports.getAllPayments = async (req, res) => {
+  try {
+    const payments = await PaymentMapping.find().sort({ createdAt: -1 });
+    res.json(payments);
+  } catch (error) {
+    console.error('Error fetching payments:', error);
+    res.status(500).send('Server error while fetching payments.');
+  }
+};
+
+// GET /payments/:paymobOrderId - Get payment by Paymob Order ID
+exports.getPaymentByOrderId = async (req, res) => {
+  try {
+    const { OrderId } = req.params;
+
+    // Find payments by mongoOrderId (assuming it's a string and not an ObjectId)
+    const payment = await PaymentMapping.find({ mongoOrderId:OrderId });
+
+    // If payment is not found, return 404
+    if (!payment || payment.length === 0) {
+      return res.status(404).send('Payment not found for given Order ID.');
+    }
+
+    // Return the payment details
+    res.json(payment);
+  } catch (error) {
+    console.error('Error fetching payment by order ID:', error);
+    res.status(500).send('Server error while fetching payment.');
+  }
+};
+

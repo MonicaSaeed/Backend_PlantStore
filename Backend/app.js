@@ -4,6 +4,9 @@ require('dotenv').config();
 const app = express();
 const DBListener = require('./Config/dbConnection'); 
 
+const userRoute = require("../Backend/Routes/UserRoutes");
+app.use("/api/users",userRoute);
+
 const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(express.json());

@@ -30,26 +30,34 @@ exports.pay = async (req, res) => {
   
   exports.paymentCallback = async (req, res) => {
     const query = req.query;
-    const paymobOrderId = Number(query.order); // make sure it's a number
-  
-    try {
-      const mapping = await OrderMapping.findOne({ paymobOrderId });
-      if (!mapping) {
-        console.error(`⚠️ No mapping found for Paymob order: ${paymobOrderId}`);
-        return res.status(404).send('Order not found');
-      }
-  
-      const status = (query.success === 'true' && query.txn_response_code === 'APPROVED')
-        ? 'paid'
-        : 'waiting';
-  
-      await Order.findByIdAndUpdate(mapping.mongoOrderId, { paymentStatus: status });
-  
-      console.log(`✅ Payment ${status === 'paid' ? 'successful' : 'failed'} for order: ${mapping.mongoOrderId}`);
-      res.send(status === 'paid' ? 'Payment Success!' : 'Payment Failed.');
-    } catch (error) {
-      console.error('❌ Error processing payment callback:', error.message);
-      res.status(500).send('Server error');
+    console.log(query);
+
+    if (query.success === 'true' && query.txn_response_code === 'APPROVED') {
+        try {
+            const paymobOrderId = query.order;
+
+            const mapping = await OrderMapping.findOne({ paymobOrderId }).sort({ createdAt: -1 });
+            if (!mapping) return res.status(404).send('Order mapping not found');
+
+            const order = await Order.findById(mapping.mongoOrderId);
+            if (!order) return res.status(404).send('Order not found');
+
+            if (order.paymentStatus === 'paid') {
+                console.log("ℹ️ Order already marked as paid:", order._id);
+                return res.send('Order already paid.');
+            }
+
+            await Order.findByIdAndUpdate(mapping.mongoOrderId, { paymentStatus: 'paid' });
+
+            console.log("✅ Payment successful for order:", order._id);
+            res.send('Payment Success!');
+        } catch (error) {
+            console.error('Callback Error:', error);
+            res.status(500).send('Internal Server Error during callback.');
+        }
+    } else {
+        res.send('Payment Failed.');
     }
-  };
+};
+
   

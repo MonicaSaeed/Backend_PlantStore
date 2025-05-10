@@ -22,7 +22,7 @@ router.get('/getAll',potController.getAll)
 // getPot-byId
 router.get('/getPot-byId/:id',potController.getPotById)
 // filter Pots 
-router.get('/filter', potController.Filter)
+router.post('/filter', potController.Filter)
 /// get batch of pots (10 for ex)
 router.get('/getBatch',potController.getBatch);
 

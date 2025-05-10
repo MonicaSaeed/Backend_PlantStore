@@ -4,7 +4,7 @@ const plantController = require('../Controllers/plantsController');
 
 // Public routes
 router.get('/', plantController.getAllPlants);
-router.get('/fillter', plantController.searchPlants);
+router.post('/fillter', plantController.searchPlants);
 router.get('/batch', plantController.getBatch);
 router.get('/:id', plantController.getPlantById);
 router.post('/:plantId/reviews', plantController.addReviewToPlant);

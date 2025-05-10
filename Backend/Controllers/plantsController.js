@@ -134,23 +134,45 @@ exports.bulkInsertPlants = async (req, res) => {
 exports.searchPlants = async (req, res) => {
     try {
         console.log('search');
-
+          console.log('Received /plant/fillter POST request');
+        console.log(req.body)
         const { category, sunlightNeeds, careLevel, size, priceMin, priceMax } = req.body || {};
         const filter = {};
 
-        if (category) filter.category = category;
-        if (sunlightNeeds) filter.sunlightNeeds = sunlightNeeds;
-        if (size) filter.size = size;
-        if (careLevel) filter.careLevel = careLevel;
-        if (priceMin || priceMax) filter.price = {};
-        if (priceMin) filter.price.$gte = priceMin;
-        if (priceMax) filter.price.$lte = priceMax;
+        // if (category) filter.category = category;
+        // if (sunlightNeeds) filter.sunlightNeeds = sunlightNeeds;
+        // if (size) filter.size = size;
+        // if (careLevel) filter.careLevel = careLevel;
+        // if (priceMin || priceMax) filter.price = {};
+        // if (priceMin) filter.price.$gte = priceMin;
+        // if (priceMax) filter.price.$lte = priceMax;
+if (Array.isArray(category) && category.length > 0) {
+  filter.category = { $in: category };
+}
+
+if (Array.isArray(sunlightNeeds) && sunlightNeeds.length > 0) {
+  filter.sunlightNeeds = { $in: sunlightNeeds };
+}
+
+if (Array.isArray(careLevel) && careLevel.length > 0) {
+  filter.careLevel = { $in: careLevel };
+}
+
+if (Array.isArray(size) && size.length > 0) {
+  filter.size = { $in: size };
+}
+
+if (priceMin != null || priceMax != null) {
+  filter.price = {};
+  if (priceMin != null) filter.price.$gte = priceMin;
+  if (priceMax != null) filter.price.$lte = priceMax;
+}
 
         console.log(filter);
         const plants = await Plant.find(filter);
 
         if (plants.length === 0) {
-            return res.status(404).json({ message: 'No plants found for the given filters' });
+            return res.status(200).json({plants, message: 'No plants found for the given filters' });
         }
 
         res.json(plants);

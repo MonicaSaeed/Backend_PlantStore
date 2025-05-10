@@ -117,20 +117,22 @@ exports.Filter= async (req, res) => {
   
       if (material) filter.material = material;
       if (color)    filter.color    = color;
-      if (size)     filter.size     = size;
-  
+if (Array.isArray(size) && size.length > 0) {
+  filter.size = { $in: size };
+}  
       if (priceMin != null || priceMax != null) {
-        filter.price = {};
-        if (priceMin != null) filter.price.$gte = Number(priceMin);
-        if (priceMax != null) filter.price.$lte = Number(priceMax);
-      }
+  filter.price = {};
+  if (priceMin != null) filter.price.$gte = priceMin;
+  if (priceMax != null) filter.price.$lte = priceMax;
+}
   
       console.log('Applied filter:', filter);
       const pots = await Pot.find(filter);
   
       if (pots.length === 0) {
-        return res.status(404).json({ message: 'No pots found for the given filters' });
+        return res.status(200).json({pots, message: 'No pots found for the given filters' });
       }
+      //console.log(pots)
       res.json(pots);
   
     } catch (err) {

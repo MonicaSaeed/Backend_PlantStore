@@ -12,8 +12,8 @@ exports.getOrCreateFavorites = async (req, res) => {
         if (!user) return res.status(404).json({ message: 'User not found' });
 
         let favorites = await Favorites.findOne({ userId })
-        .populate('plants')
-        .populate('pots');
+        // .populate('plants')
+        // .populate('pots');
 
         console.log(favorites);
         if (!favorites) {

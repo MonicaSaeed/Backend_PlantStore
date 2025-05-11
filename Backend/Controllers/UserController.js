@@ -20,7 +20,9 @@ Login = async(req,res)=>{
                 username: founduser.username,
                 role: founduser.role
             },
-            "PrivateKey12345"        );
+            "PrivateKey12345",
+            { expiresIn: '48h' } 
+        );
         return res.status(200).json({
             message: "Login Successfully",
             token: token

@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 Login = async(req,res)=>{
 
     let user = req.body; 
+    console.log(user);
     user.email = user.email.toLowerCase();
 
     let founduser = await usermodel.findOne({email:user.email});

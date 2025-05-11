@@ -22,7 +22,7 @@ const cors = require('cors');
 app.use(cors({
     origin: 'http://localhost:4200',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'productId']
+    allowedHeaders: ['Content-Type', 'productId','Authorization']
 }));
 
 // Connect to MongoDB

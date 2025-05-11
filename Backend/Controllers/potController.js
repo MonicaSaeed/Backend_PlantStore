@@ -130,6 +130,7 @@ if (Array.isArray(size) && size.length > 0) {
       const pots = await Pot.find(filter);
   
       if (pots.length === 0) {
+        
         return res.status(200).json({pots, message: 'No pots found for the given filters' });
       }
       //console.log(pots)

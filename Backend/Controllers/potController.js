@@ -112,7 +112,7 @@ exports.getPotById=async (req,res)=>{
 exports.Filter= async (req, res) => {
     try {
       console.log('Searching pots with body filters…' + req.body);
-      const { material, color, size, priceMin, priceMax } = req.body;
+      const { material, color, size, priceMin, priceMax,stock  } = req.body;
       const filter = {};
   
       if (material) filter.material = material;
@@ -125,7 +125,9 @@ if (Array.isArray(size) && size.length > 0) {
   if (priceMin != null) filter.price.$gte = priceMin;
   if (priceMax != null) filter.price.$lte = priceMax;
 }
-  
+    if (stock !== undefined) {
+      filter.stock = stock ? { $gt: 0 } : 0;
+    }
       console.log('Applied filter:', filter);
       const pots = await Pot.find(filter);
   

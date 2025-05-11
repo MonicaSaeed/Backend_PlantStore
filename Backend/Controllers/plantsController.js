@@ -136,7 +136,7 @@ exports.searchPlants = async (req, res) => {
         console.log('search');
           console.log('Received /plant/fillter POST request');
         console.log(req.body)
-        const { category, sunlightNeeds, careLevel, size, priceMin, priceMax } = req.body || {};
+        const { category, sunlightNeeds, careLevel, size, priceMin, priceMax ,stock } = req.body || {};
         const filter = {};
 
         // if (category) filter.category = category;
@@ -167,7 +167,9 @@ if (priceMin != null || priceMax != null) {
   if (priceMin != null) filter.price.$gte = priceMin;
   if (priceMax != null) filter.price.$lte = priceMax;
 }
-
+  if (stock !== undefined) {
+      filter.stock = stock ? { $gt: 0 } : 0;
+    }
         console.log(filter);
         const plants = await Plant.find(filter);
 

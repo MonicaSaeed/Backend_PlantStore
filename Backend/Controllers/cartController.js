@@ -10,7 +10,7 @@ const getCartItems = async (req, res) => {
         }
         const cartItems = await cartModel.findOne({ userId });
         if (!cartItems) {
-            return res.status(404).json({ success: false, message: "No items found in the cart" });
+            return res.status(200).json({ success: false, message: "No items found in the cart" });
         }
         return res.status(200).json({ success: true, cartItems });
     } catch (error) {

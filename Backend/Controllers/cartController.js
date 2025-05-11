@@ -96,9 +96,10 @@ const updateCartItem = async (req, res) => {
                     return res.status(400).json({ success: false, message: "No more stock available" });
                 }
             } else if (operation === "remove") {
-                if(cartItems.itemsPlant[findIndex].quantity>1)
                 cartItems.itemsPlant[findIndex].quantity -= 1;
-               
+                if (cartItems.itemsPlant[findIndex].quantity <= 0) {
+                    cartItems.itemsPlant.splice(findIndex, 1);
+                }
             }
             await cartItems.save();
         }else{

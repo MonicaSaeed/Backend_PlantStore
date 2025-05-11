@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 Login = async(req,res)=>{
 
     let user = req.body; 
+    console.log(user);
     user.email = user.email.toLowerCase();
 
     let founduser = await usermodel.findOne({email:user.email});
@@ -19,9 +20,7 @@ Login = async(req,res)=>{
                 username: founduser.username,
                 role: founduser.role
             },
-            "PrivateKey12345",
-            { expiresIn: '48h' } 
-        );
+            "PrivateKey12345"        );
         return res.status(200).json({
             message: "Login Successfully",
             token: token

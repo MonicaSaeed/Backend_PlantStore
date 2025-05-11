@@ -1,10 +1,10 @@
 const jwt = require("jsonwebtoken");
 
 const permission = (req, res, next) => {
-
-      const authHeader = req.headers['authorization'];
+      console.log("Received token:", req.headers['Authorization']);
+      const authHeader = req.headers['Authorization'];
       const token = authHeader && authHeader.split(' ')[1];
-      
+      console.log("Received token:", token);
       if (!token) {
          return res.status(401).json({ message: "Authentication token required" });
       }

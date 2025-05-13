@@ -57,17 +57,21 @@ exports.updatePot = async(req,res)=>{
 // delete-pot 
 exports.deletePot=async(req,res)=>{
     try{
-
-        const {potid,id}=req.headers;
+        const {id}=req.params;
+        console.log(id);
         // const user = await User.findById(id);
         // if(user.role!='admin')
         //    return res.status(403).json({message:"You Are not Authorized to add Pot"});
-        await Pot.findByIdAndDelete(potid);
-        return res.status(201).json({message:"Pot deleted Suceddfully"})
-    }catch(err)
-    {
+        console.log(id);
+        const pot = await Pot.findByIdAndDelete(id);
+        if(!pot)
+            return res.status(404).json({message:"Pot not found"});
+        return res.status(200).json({message:"Pot deleted successfully",pot});
+      }catch(err) 
+      {
         res.status(500).json({message:`Internal server error + ${err}`});
-    }
+      }
+
 }
 
 // delete all pots 

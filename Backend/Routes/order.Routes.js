@@ -7,6 +7,7 @@ const OrderController = require('../Controllers/orderController');
 router.post('/',OrderController.postOrderInfo);
 // GET all orders
 router.get('/', OrderController.getAllOrders);
+router.post('/insertmany',OrderController.postMultipleOrders);
 
 // GET a specific order by ID
 router.get('/:id', OrderController.getOrderById);

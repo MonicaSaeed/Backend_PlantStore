@@ -22,6 +22,39 @@ exports.postOrderInfo = async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 };
+//insert many orderss 
+
+exports.postMultipleOrders = async (req, res) => {
+  try {
+    const orders = req.body;
+
+    // Validate input: must be an array
+    if (!Array.isArray(orders)) {
+      return res.status(400).json({ message: "Request body must be an array of orders" });
+    }
+
+    // Optional: Validate each order structure before insertion
+    const validOrders = orders.map(order => ({
+      userId: order.userId,
+      itemsPlant: order.itemsPlant || [],
+      itemsPot: order.itemsPot || [],
+      totalAmount: order.totalAmount,
+      orderStatus: order.orderStatus || 'pending',
+      shippingAddress: order.shippingAddress,
+      paymentStatus: order.paymentStatus || 'pending',
+      createdAt: order.createdAt || new Date(), // for analytics by month
+      updatedAt: order.updatedAt || new Date()
+    }));
+
+    const insertedOrders = await Order.insertMany(validOrders, { ordered: false });
+    res.status(201).json(insertedOrders);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
 
 // GET - All orders
 exports.getAllOrders = async (req, res) => {

@@ -29,6 +29,38 @@ exports.getOrCreateFavorites = async (req, res) => {
     }
 };
 
+
+// get fav or create if not exsits
+exports.getOrCreateFavoritesWithPopulate = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        let favorites = await Favorites.findOne({ userId })
+        .populate({
+    path: 'plants',
+    model: 'Plant' // make sure this matches your Plant model name
+  })
+        .populate({
+    path: 'pots',
+    model: 'Pot' // make sure this matches your Plant model name
+  });
+
+        console.log(favorites);
+        if (!favorites) {
+        favorites = new Favorites({ userId, plants: [], pots: [] });
+        await favorites.save();
+        let user = await User.findByIdAndUpdate(userId,{ favorites: favorites._id }, { new: true });
+        console.log(user);
+        }
+
+        res.json(favorites);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
 //Add a plant to favorites
 exports.addPlantToFavorites = async (req, res) => {
     try {

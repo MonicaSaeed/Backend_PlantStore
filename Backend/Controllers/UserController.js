@@ -87,7 +87,7 @@ updateUser = async (req, res) => {
     try {
         const { id } = req.params;
         const UpdatedUser = req.body;
-        console.log('bgrb');
+        console.log(UpdatedUser);
         if (UpdatedUser.email) {
         UpdatedUser.email = UpdatedUser.email.toLowerCase();
         // Check if email is already used by another user
@@ -111,12 +111,6 @@ updateUser = async (req, res) => {
         if (usernameExists) {
             return res.status(400).json({ error: 'Username already in use' });
         }
-        }
-
-        if (UpdatedUser.password) {
-        const salt = await bcrypt.genSalt(15);
-        const PasswordHashe = await bcrypt.hash(UpdatedUser.password, salt);
-        UpdatedUser.password = PasswordHashe;
         }
 
         const updated = await usermodel.findByIdAndUpdate(id, UpdatedUser, { new: true });
@@ -151,7 +145,6 @@ changePassword = async (req, res) => {
         const salt = await bcrypt.genSalt(15);
         const hashedPassword = await bcrypt.hash(newPassword, salt);
         user.password = hashedPassword;
-
         await user.save();
 
         res.status(200).json({ message: 'Password updated successfully' });

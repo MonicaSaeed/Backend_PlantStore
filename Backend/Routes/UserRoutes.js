@@ -14,6 +14,8 @@ router.get('/:id',UserController.getUserById);
 
 router.put('/:id',UserController.updateUser);
 
+router.put('/change-password/:id', UserController.changePassword);
+
 router.delete('/:id',UserController.deleteUser);
 
 

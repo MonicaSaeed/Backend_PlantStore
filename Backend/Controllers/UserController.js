@@ -51,7 +51,7 @@ register = async(req,res)=>{
     
         let newuser = new usermodel(user);
         await newuser.save();
-    
+        console.log('done');
         return res.status(200).json({message:"Registered Successfuly",userData:newuser});
     
 }
@@ -83,43 +83,78 @@ getUserById = async(req,res) =>{
 
 }
 
-updateUser = async(req,res)=>{   
+updateUser = async (req, res) => {
     try {
+        const { id } = req.params;
+        const UpdatedUser = req.body;
+        console.log(UpdatedUser);
+        if (UpdatedUser.email) {
+        UpdatedUser.email = UpdatedUser.email.toLowerCase();
+        // Check if email is already used by another user
+        const emailExists = await usermodel.findOne({
+            email: UpdatedUser.email,
+            _id: { $ne: id } // exclude current user
+        });
 
-        const {id}  = req.params;
-        const UpdatedUser = req.body;   
-
-        if(UpdatedUser.email)
-        {
-            UpdatedUser.email = UpdatedUser.email.toLowerCase();
+        if (emailExists) {
+            return res.status(400).json({ error: 'Email already in use' });
         }
-        if (UpdatedUser.password) 
-        {
-            const salt = await bcrypt.genSalt(15);
-            let PasswordHashe = await bcrypt.hash(UpdatedUser.password, salt);
-            UpdatedUser.password = PasswordHashe;
+        }
 
+        if (UpdatedUser.username) {
+        // Check if username is already used by another user
+        const usernameExists = await usermodel.findOne({
+            username: UpdatedUser.username,
+            _id: { $ne: id } // exclude current user
+        });
+
+        if (usernameExists) {
+            return res.status(400).json({ error: 'Username already in use' });
+        }
         }
 
         const updated = await usermodel.findByIdAndUpdate(id, UpdatedUser, { new: true });
-            if (!updated)
-            {
-                return res.status(404).json({ message: 'User not found' });
-            }
+        if (!updated) {
+        return res.status(404).json({ message: 'User not found' });
+        }
 
         res.status(200).json(updated);
-    } 
-        catch (error)
-        {
-            res.status(400).json({error:"Error"});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+changePassword = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { currentPassword, newPassword } = req.body;
+        console.log(currentPassword,newPassword);
+        const user = await usermodel.findById(id);
+        console.log(user);
+        if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+        }
+
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+        return res.status(401).json({ message: 'Current password is incorrect' });
         }
 
 
-}
+        const salt = await bcrypt.genSalt(15);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        user.password = hashedPassword;
+        await user.save();
+
+        res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+        console.error('Error updating password:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
 
 deleteUser = async(req,res) => {
-
-
     try {
 
         const {id}  = req.params;
@@ -147,5 +182,6 @@ module.exports = {
     getAllUsers,
     getUserById,
     updateUser,
-    deleteUser
+    deleteUser,
+    changePassword
 }

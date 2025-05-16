@@ -1,0 +1,191 @@
+@startuml
+skinparam packageStyle rectangle
+
+'============== PACKAGES ==============
+package "packages/models" {
+    class User {
+      +ObjectId _id
+      +String username
+      +String email
+      +String password
+      +String role
+      +List<String> addresses
+    }
+
+    class Cart {
+      +ObjectId _id
+      +ObjectId userId
+      +List<PlantItem> itemsPlant
+      +List<PotItem> itemsPot
+    }
+
+    class Favorites {
+      +ObjectId _id
+      +ObjectId userId
+      +List<ObjectId> plants
+      +List<ObjectId> pots
+    }
+
+    class Order {
+      +ObjectId _id
+      +ObjectId userId
+      +List<OrderPlantItem> itemsPlant
+      +List<OrderPotItem> itemsPot
+      +Number totalAmount
+      +String orderStatus
+      +String shippingAddress
+      +String paymentStatus
+    }
+
+    class PaymentMapping {
+      +String paymobOrderId
+      +ObjectId mongoOrderId
+      +PaymentInfo paymentInfo
+      +String paymentStatus
+    }
+
+    class Plant {
+      +ObjectId _id
+      +String name
+      +String description
+      +List<String> features
+      +Number price
+      +List<String> imageUrls
+      +String category
+      +String sunlightNeeds
+      +String careLevel
+      +String size
+      +Number stock
+      +List<ObjectId> reviews
+      +Number rating
+    }
+
+    class Pot {
+      +ObjectId _id
+      +String name
+      +String material
+      +String color
+      +String size
+      +Number price
+      +Number stock
+      +List<String> imageUrls
+      +List<ObjectId> reviews
+      +Number rating
+    }
+
+    class Review {
+      +ObjectId _id
+      +ObjectId userId
+      +Item item
+      +Number rating
+      +String comment
+    }
+}
+
+package "packages/controllers" {
+    class UserController {
+      +register(userData)
+      +login(email, password)
+      +getUserById(userId)
+      +updateUser(userId, updates)
+      +deleteUser(userId)
+    }
+
+    class CartController {
+      +getCart(userId)
+      +addPlantToCart(userId, plantId, quantity)
+      +addPotToCart(userId, potId, quantity)
+      +removeItem(userId, itemId)
+      +clearCart(userId)
+    }
+
+    class FavoritesController {
+      +getFavorites(userId)
+      +addPlantToFavorites(userId, plantId)
+      +addPotToFavorites(userId, potId)
+      +removeFromFavorites(userId, itemId)
+    }
+
+    class OrderController {
+      +placeOrder(userId, orderData)
+      +getUserOrders(userId)
+      +getOrderById(orderId)
+      +updateOrderStatus(orderId, status)
+    }
+
+    class PaymentController {
+      +createPaymentIntent(orderId, amount)
+      +verifyPayment(orderId)
+      +getPaymentDetails(orderId)
+    }
+
+    class PlantController {
+      +getAllPlants()
+      +getPlantById(plantId)
+      +addPlant(plantData)
+      +updatePlant(plantId, updates)
+      +deletePlant(plantId)
+    }
+
+    class PotController {
+      +getAllPots()
+      +getPotById(potId)
+      +addPot(potData)
+      +updatePot(potId, updates)
+      +deletePot(potId)
+    }
+
+    class ReviewController {
+      +addReview(userId, itemId, rating, comment)
+      +getReviewsForItem(itemId)
+      +deleteReview(reviewId)
+    }
+}
+
+package "routes" {
+    class UserRoutes
+    class cartRoutes
+    class favRoutes
+    class orderRoutes
+    class payRoutes
+    class plantsRoutes
+    class PotRoutes
+    class reviewRoutes
+}
+
+package "core" {
+    class server
+}
+
+'============== ROUTE -> CONTROLLER ==============
+UserRoutes --> UserController
+cartRoutes --> CartController
+favRoutes --> FavoritesController
+orderRoutes --> OrderController
+payRoutes --> PaymentController
+plantsRoutes --> PlantController
+PotRoutes --> PotController
+reviewRoutes --> ReviewController
+
+'============== CONTROLLER -> MODEL ==============
+UserController --> User
+CartController --> Cart
+FavoritesController --> Favorites
+OrderController --> Order
+PaymentController --> PaymentMapping
+PlantController --> Plant
+PotController --> Pot
+ReviewController --> Review
+ReviewController --> User
+
+'============== SERVER USES ROUTES ==============
+server --> UserRoutes
+server --> cartRoutes
+server --> favRoutes
+server --> orderRoutes
+server --> payRoutes
+server --> plantsRoutes
+server --> PotRoutes
+server --> reviewRoutes
+
+@enduml

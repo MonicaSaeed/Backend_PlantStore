@@ -61,7 +61,7 @@ exports.updatePlant = async (req, res) => {
         runValidators: true //Run validators on the update
         });
         if (!plant) return res.status(404).json({ message: 'Plant not found' });
-        res.json(plant);
+        res.status(200).json({ message: "Updated Successfully", plant });
     } catch (err) {
         res.status(400).json({ message: err.message });
     }

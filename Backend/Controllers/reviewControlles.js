@@ -41,7 +41,6 @@ const addReview = async (req, res) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 };
-
 const getReviews = async (req, res) => {
     try {
         const { productId } = req.body;
@@ -51,16 +50,30 @@ const getReviews = async (req, res) => {
         if (!reviews) return res.status(404).json({ message: "No reviews found" });
 
         const reviewsList = await Promise.all(reviews.map(async (review) => {
-            const user = await userModel.findById(review.userId).select('username');
-            return {
-                username: user.username,
-                date: review.createdAt,
-                rating: review.rating,
-                comment: review.comment,
-            };
+            try {
+                const user = await userModel.findById(review.userId);
+                // Skip if user not found
+                if (!user) return null;
+                
+                return {
+                    username: user.username,
+                    date: review.createdAt,
+                    rating: review.rating,
+                    comment: review.comment,
+                };
+            } catch (error) {
+                console.error(`Error processing review ${review._id}:`, error);
+                return null; // Skip this review if there's an error
+            }
         }));
 
-        return res.status(200).json({ message: "Reviews fetched successfully", reviews: reviewsList });
+        // Filter out null values (reviews with deleted users)
+        const filteredReviews = reviewsList.filter(review => review !== null);
+        return res.status(200).json({ 
+            message: "Reviews fetched successfully", 
+            reviews: filteredReviews,
+            totalReviews: filteredReviews.length
+        });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ message: "Internal server error" });

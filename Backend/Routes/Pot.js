@@ -12,7 +12,7 @@ router.post('/add-pot',potController.addPot)
 // insert Many 
 router.post('/insert-many',potController.InsertMany)
 /// update-pot 
-router.put('/update-pot',potController.updatePot)
+router.put('/update-pot/:id',potController.updatePot)
  // delete-pot 
 router.delete('/delete-pot/:id',potController.deletePot)
 // delete all pots

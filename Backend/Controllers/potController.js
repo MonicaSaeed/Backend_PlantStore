@@ -38,7 +38,7 @@ exports.InsertMany = async(req,res)=>{
 // update pot 
 exports.updatePot = async(req,res)=>{
     try{
-        const {potid}=req.headers;
+        const potid=req.params.id;
        // const {id}=req.headers;
          // const user = await User.findById(id);
         // if(user.role!='admin')

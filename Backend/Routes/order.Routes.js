@@ -8,6 +8,7 @@ router.post('/',OrderController.postOrderInfo);
 // GET all orders
 router.get('/', OrderController.getAllOrders);
 router.post('/insertmany',OrderController.postMultipleOrders);
+router.get('/getAll', OrderController.getAllOrders1);
 
 // GET a specific order by ID
 router.get('/:id', OrderController.getOrderById);

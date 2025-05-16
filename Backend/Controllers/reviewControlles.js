@@ -67,24 +67,37 @@ const getReviews = async (req, res) => {
     }
 };
 
-// New: Admin view to get all reviews with user & item info
+
 const getAllReviews = async (req, res) => {
     try {
-        // Fetch all reviews with user info populated (username & email)
         const reviews = await reviewModel.find()
             .populate('userId', 'username email')
             .sort({ createdAt: -1 });
 
-        // Map to a cleaner object with item info, rating, comment, date
-        const formatted = reviews.map(r => ({
-            reviewId: r._id,
-            username: r.userId?.username || "Unknown",
-            userEmail: r.userId?.email || "Unknown",
-            itemId: r.item.id,
-            itemType: r.item.type,
-            rating: r.rating,
-            comment: r.comment,
-            date: r.createdAt,
+        // For each review, fetch item name based on type and id
+        const formatted = await Promise.all(reviews.map(async r => {
+            let itemName = "Unknown";
+
+            if (r.item.type === "plant") {
+                const plant = await Plant.findById(r.item.id).select('name');
+                if (plant) itemName = plant.name;
+            } else if (r.item.type === "pot") {
+                // Assuming you have a Pot model, do similar lookup here
+                const pot = await Pot.findById(r.item.id).select('name');
+                if (pot) itemName = pot.name;
+            }
+
+            return {
+                reviewId: r._id,
+                username: r.userId?.username || "Unknown",
+                userEmail: r.userId?.email || "Unknown",
+                itemId: r.item.id,
+                itemType: r.item.type,
+                itemName: itemName,
+                rating: r.rating,
+                comment: r.comment,
+                date: r.createdAt,
+            };
         }));
 
         res.status(200).json({ message: "All reviews fetched", reviews: formatted });
@@ -97,11 +110,11 @@ const getAllReviews = async (req, res) => {
 // New: Admin deletes a review by review ID
 const deleteReview = async (req, res) => {
     try {
-        const { reviewId } = req.params;
-        if (!reviewId) return res.status(400).json({ message: "Review ID is required" });
+        const { id } = req.params;
+        if (!id) return res.status(400).json({ message: "Review ID is required" });
 
         // Find review to get item info for rating update
-        const review = await reviewModel.findById(reviewId);
+        const review = await reviewModel.findById(id);
         if (!review) return res.status(404).json({ message: "Review not found" });
 
         // Remove review reference from related item
@@ -112,7 +125,7 @@ const deleteReview = async (req, res) => {
         }
 
         // Delete review
-        await reviewModel.findByIdAndDelete(reviewId);
+        await reviewModel.findByIdAndDelete(id);
 
         // Update item rating
         await updateRating(review.item.id, review.item.type);

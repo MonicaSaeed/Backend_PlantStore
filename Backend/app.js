@@ -8,14 +8,14 @@ const DBListener = require('./Config/dbConnection');
 const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(express.json());
-const userRoute = require("../Backend/Routes/UserRoutes");
-const payRoutes = require('./Routes/pay.Routes');
-const orderRoutes = require('./Routes/order.Routes')
-const potRoute = require('./Routes/Pot')
-const reviewRoute = require('./Routes/reviewRoutes')
-const favRoute = require('./Routes/favRoutes')
-const cartRoute = require('./Routes/cartRoutes')
-const plantRoute = require('./Routes/plantsRoutes')
+const userRoute = require("./routes/UserRoutes");
+const payRoutes = require('./routes/pay.Routes');
+const orderRoutes = require('./routes/order.Routes')
+const potRoute = require('./routes/Pot')
+const reviewRoute = require('./routes/reviewRoutes')
+const favRoute = require('./routes/favRoutes')
+const cartRoute = require('./routes/cartRoutes')
+const plantRoute = require('./routes/plantsRoutes')
 
 // Allow requests from Angular frontend
 const cors = require('cors');

@@ -1,11 +1,13 @@
 const { getAuthToken, createOrder, generatePaymentKey } = require('../services/paymobService');
 const PaymentMapping = require('../Models/PaymentMapping');
 const Order = require('../Models/Order');
+const { response } = require('express');
 
 const IFRAME_ID = '917275';
 
 exports.pay = async (req, res) => {
   try {
+    
     const { amount_cents, mongo_order_id } = req.body;
 
     const authToken = await getAuthToken();
@@ -22,7 +24,13 @@ exports.pay = async (req, res) => {
     const iframeURL = `https://accept.paymobsolutions.com/api/acceptance/iframes/${IFRAME_ID}?payment_token=${paymentKey}`;
     res.json({ iframe_url: iframeURL });
 
+    console.log("payment response ----------------------------------");
+    console.log(res);
+
   } catch (error) {
+    console.log("payment error ----------------------------------");
+    console.log("--------------------------------- ----------------------------------");    
+    console.log(error);
     console.error(error.response?.data || error.message);
     res.status(500).send('Payment Error');
   }
@@ -37,7 +45,7 @@ exports.paymentCallback = async (req, res) => {
     try {
       const paymobOrderId = query.order;
 
-      // Get latest mapping in case of multiple attempts
+      // Get latest mapping
       const mapping = await PaymentMapping.findOne({ paymobOrderId }).sort({ createdAt: -1 });
       if (!mapping) return res.status(404).send('Payment mapping not found');
 
@@ -46,13 +54,13 @@ exports.paymentCallback = async (req, res) => {
 
       if (order.paymentStatus === 'paid') {
         console.log("ℹ️ Order already marked as paid:", order._id);
-        return res.send('Order already paid.');
+        return res.redirect('http://localhost:4200/pay-success');
       }
 
       // Update order status
       await Order.findByIdAndUpdate(mapping.mongoOrderId, { paymentStatus: 'paid' });
 
-      // Update mapping with payment info
+      // Save payment info
       mapping.paymentStatus = 'paid';
       mapping.paymentInfo = {
         id: query.id,
@@ -70,14 +78,17 @@ exports.paymentCallback = async (req, res) => {
       await mapping.save();
 
       console.log("✅ Payment successful for order:", order._id);
-      res.send('Payment Success!');
+
+      // ✅ Redirect to frontend success page
+      return res.redirect('http://localhost:4200/pay-success');
 
     } catch (error) {
       console.error('Callback Error:', error);
-      res.status(500).send('Internal Server Error during callback.');
+      return res.status(500).send('Internal Server Error during callback.');
     }
   } else {
-    res.send('Payment Failed.');
+    // ❌ Redirect to failure page
+    return res.redirect('http://localhost:4200/pay-failed');
   }
 };
 

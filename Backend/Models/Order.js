@@ -27,7 +27,7 @@ const orderSchema = new Schema({
 
     shippingAddress: { type: String, required: true },
 
-    paymentStatus: { type: String, enum: ['pending', 'onDelivery', 'paid'], default: 'waiting' },
+    paymentStatus: { type: String, enum: ['onDelivery', 'paid'], default: 'onDelivery' },
     
 }, { timestamps: true });
 
